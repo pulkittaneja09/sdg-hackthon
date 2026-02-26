@@ -2,10 +2,11 @@ from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
 
-from feature_engineering import extract_features
+from feature_engineering import extract_full_features
 from model_loader import load_model
-from scoring import calculate_scores
-from schemas import PredictionResponse
+from rul_predictor import predict_rul_with_confidence
+from deployment_engine import recommend_deployment
+from sustainability_calculator import calculate_sustainability
 
 app = FastAPI(title="SecondSpark AI Battery Evaluation API")
 
@@ -17,9 +18,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+model, feature_columns = load_model()
+
+
 @app.get("/")
 def home():
     return {"message": "SecondSpark Backend Running"}
+
 
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
@@ -29,45 +34,20 @@ async def predict(file: UploadFile = File(...)):
         if df.empty:
             return {"error": "Empty CSV file"}
 
-        battery_id = (
-            str(df["battery_id"].iloc[0])
-            if "battery_id" in df.columns
-            else "Unknown"
+        X = extract_full_features(df)
+
+        prediction = predict_rul_with_confidence(model, X)
+
+        deployment = recommend_deployment(prediction["predicted_rul"])
+
+        sustainability = calculate_sustainability(
+            capacity_ah=X["Capacity"].iloc[0]
         )
 
-        # Trend data for frontend charts
-        capacity_trend = []
-        temperature_trend = []
-
-        if "cycle" in df.columns and "capacity" in df.columns:
-            capacity_trend = [
-                {"cycle": int(c), "capacity": float(cap)}
-                for c, cap in zip(df["cycle"], df["capacity"])
-            ]
-
-        if "cycle" in df.columns and "temperature" in df.columns:
-            temperature_trend = [
-                {"cycle": int(c), "temperature": float(t)}
-                for c, t in zip(df["cycle"], df["temperature"])
-            ]
-
-        # Feature extraction
-        features = extract_features(df)
-
-        # Load model & predict
-        model = load_model()
-        rul = model.predict([features])[0]
-
-        # Scoring
-        result = calculate_scores(rul, features)
-
         return {
-            "battery_id": battery_id,
-            "summary": result,
-            "trends": {
-                "capacity_trend": capacity_trend,
-                "temperature_trend": temperature_trend
-            }
+            "prediction": prediction,
+            "deployment": deployment,
+            "sustainability": sustainability
         }
 
     except Exception as e:

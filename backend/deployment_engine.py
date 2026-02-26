@@ -1,41 +1,16 @@
-# backend/deployment_engine.py
-
-"""
-Deployment Grading Engine
-
-This module assigns:
-- Grade (A / B / C)
-- Risk level
-- Recommended use case
-
-Based on:
-- Predicted RUL
-- State of Health (SOH)
-"""
-
-def recommend_deployment(rul: float, soh: float) -> dict:
-    """
-    Assign grade and deployment recommendation
-    based on predicted RUL and SOH.
-    """
-
-    if rul >= 60 and soh >= 0.85:
+def recommend_deployment(predicted_rul):
+    if predicted_rul >= 100:
         return {
             "grade": "A",
-            "risk_level": "Low",
-            "recommendation": "Suitable for Community Solar Grid Storage"
+            "recommended_use": "Solar Grid / Renewable Energy Storage"
         }
-
-    elif rul >= 30 and soh >= 0.75:
+    elif predicted_rul >= 50:
         return {
             "grade": "B",
-            "risk_level": "Moderate",
-            "recommendation": "Suitable for Commercial Backup or Microgrid Storage"
+            "recommended_use": "Backup Storage / UPS Systems"
         }
-
     else:
         return {
             "grade": "C",
-            "risk_level": "High",
-            "recommendation": "Recommended for Recycling"
+            "recommended_use": "Recycle — Insufficient Life Remaining"
         }
