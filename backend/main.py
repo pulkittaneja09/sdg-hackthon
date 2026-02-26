@@ -18,7 +18,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-model= load_model()
+# Load model once at startup
+model = load_model()
 
 
 @app.get("/")
@@ -34,41 +35,106 @@ async def predict(file: UploadFile = File(...)):
         if df.empty:
             return {"error": "Empty CSV file"}
 
+        # ===============================
+        # TREND DATA FOR FRONTEND GRAPHS
+        # ===============================
+
+        capacity_trend = (
+            df.groupby("cycle")["Capacity"]
+            .mean()
+            .reset_index()
+            .to_dict(orient="records")
+        )
+
+        last_cycle = df["cycle"].max()
+        df_last = df[df["cycle"] == last_cycle]
+
+        voltage_trend = (
+            df_last[["Time", "Voltage_measured"]]
+            .rename(columns={"Voltage_measured": "value"})
+            .to_dict(orient="records")
+        )
+
+        temperature_trend = (
+            df_last[["Time", "Temperature_measured"]]
+            .rename(columns={"Temperature_measured": "value"})
+            .to_dict(orient="records")
+        )
+
+        # ===============================
+        # FEATURE EXTRACTION
+        # ===============================
+
         X = extract_full_features(df)
+
+        # ===============================
+        # PREDICTION
+        # ===============================
 
         predictions = predict_rul_with_confidence(model, X)
 
-        results = []
+        # Get the first (and only) prediction
+        prediction = predictions[0] if predictions else {"predicted_rul": 0, "confidence_score": 0}
+        
+        rul = prediction["predicted_rul"]
+        confidence = prediction["confidence_score"]
 
-        for pred in predictions:
-            rul = pred["predicted_rul"]
-            confidence = pred["confidence_score"]
+        capacity_val = float(X.iloc[0]["Capacity"])
 
-            capacity_val = float(X.iloc[0]["Capacity"])
-            soh_val = float(X.iloc[0]["capacity_ratio"])
+        # ===============================
+        # DEPLOYMENT DECISION
+        # ===============================
 
-            decision = recommend_deployment(
-                predicted_rul=rul
-            )
+        decision = recommend_deployment(predicted_rul=rul)
 
-            impact = calculate_sustainability(
-                capacity_ah=capacity_val,
-                grade=decision["grade"]
-            )
+        # ===============================
+        # SUSTAINABILITY IMPACT
+        # ===============================
 
-            results.append({
-                "prediction": {
-                    "predicted_rul": rul,
-                    "confidence_score": confidence
-                },
-                "deployment": decision,
-                "sustainability": impact
-            })
+        impact = calculate_sustainability(
+            capacity_ah=capacity_val,
+            grade=decision["grade"]
+        )
+
+        # ===============================
+        # FINAL RESPONSE
+        # ===============================
 
         return {
-            "total_batteries": len(results),
-            "results": results
-        }
+    "prediction": prediction,
+    "deployment": decision,
+    "sustainability": impact,
+
+    "analysis": {
+        "degradation_rate": (
+            "High" if prediction["predicted_rul"] < 50
+            else "Moderate" if prediction["predicted_rul"] < 100
+            else "Low"
+        ),
+        "health_status": (
+            "Critical" if prediction["predicted_rul"] < 40
+            else "Aging" if prediction["predicted_rul"] < 80
+            else "Healthy"
+        )
+    },
+
+    "thresholds": {
+        "eol_capacity": float(df["Capacity"].iloc[0] * 0.7)
+    },
+
+    "trends": {
+        "capacity_trend": capacity_trend,
+        "soh_trend": [
+            {
+                "cycle": row["cycle"],
+                "soh": round(row["Capacity"] / df["Capacity"].iloc[0], 3)
+            }
+            for row in capacity_trend
+        ],
+        "voltage_trend": voltage_trend,
+        "temperature_trend": temperature_trend
+    }
+}
 
     except Exception as e:
         return {"error": str(e)}
