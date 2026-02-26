@@ -21,10 +21,10 @@ app.add_middleware(
 def home():
     return {"message": "SecondSpark Backend Running"}
 
-@app.post("/predict", response_model=PredictionResponse)
+@app.post("/predict")
 async def predict(file: UploadFile = File(...)):
     try:
-        df = pd.read_csv(file.file, sep=None, engine="python")
+        df = pd.read_csv(file.file)
 
         if df.empty:
             return {"error": "Empty CSV file"}
@@ -34,7 +34,23 @@ async def predict(file: UploadFile = File(...)):
             if "battery_id" in df.columns
             else "Unknown"
         )
-        
+
+        # Trend data for frontend charts
+        capacity_trend = []
+        temperature_trend = []
+
+        if "cycle" in df.columns and "capacity" in df.columns:
+            capacity_trend = [
+                {"cycle": int(c), "capacity": float(cap)}
+                for c, cap in zip(df["cycle"], df["capacity"])
+            ]
+
+        if "cycle" in df.columns and "temperature" in df.columns:
+            temperature_trend = [
+                {"cycle": int(c), "temperature": float(t)}
+                for c, t in zip(df["cycle"], df["temperature"])
+            ]
+
         # Feature extraction
         features = extract_features(df)
 
@@ -45,10 +61,14 @@ async def predict(file: UploadFile = File(...)):
         # Scoring
         result = calculate_scores(rul, features)
 
-        # Add battery id
-        result["battery_id"] = battery_id
-
-        return result
+        return {
+            "battery_id": battery_id,
+            "summary": result,
+            "trends": {
+                "capacity_trend": capacity_trend,
+                "temperature_trend": temperature_trend
+            }
+        }
 
     except Exception as e:
         return {"error": str(e)}
