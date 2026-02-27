@@ -26,7 +26,7 @@ export function RULGauge({ predictedRulLifecycles, height = 220 }: RULGaugeProps
   return (
     <div className="w-full rounded-2xl border border-white/10 bg-[rgba(20,25,30,0.6)] backdrop-blur-xl p-6 shadow-[0_20px_60px_rgba(0,0,0,0.3)] transition-all duration-300 hover:shadow-[0_30px_80px_rgba(16,185,129,0.1)]">
       <div className="mb-4 text-xs font-medium uppercase tracking-[0.18em] text-white/60">
-        Remaining useful life
+        Remaining useful cycles
       </div>
       <div style={{ height }} className="relative w-full">
         <ResponsiveContainer width="100%" height="100%">
