@@ -162,10 +162,10 @@ export function AnalysisPage() {
     import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
   const response = await axios.post<AnalysisResponse>(
-  `${API_BASE}/predict`,
-  formData
-)
-
+    `${API_BASE}/predict`,
+    formData
+  )
+  const raw = response.data
 
       const battery = normalizeBatteryResult(raw)
 
