@@ -1,6 +1,7 @@
 from pathlib import Path
 import io
 import logging
+import os
 
 from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
@@ -13,8 +14,13 @@ from model_loader import load_model
 from rul_predictor import predict_rul_with_confidence
 from deployment_engine import recommend_deployment
 from sustainability_calculator import calculate_sustainability
+from report_generator import generate_battery_report
 
-app = FastAPI(title="SecondSpark AI Battery Evaluation API")
+from fastapi.responses import FileResponse
+from pdf_generator import generate_pdf_report
+import uuid
+
+app = FastAPI(title="S2S - Scrap to Spark AI Battery Evaluation API")
 
 app.add_middleware(
     CORSMiddleware,
@@ -36,7 +42,7 @@ def _serve_spa_or_home():
         index_path = FRONTEND_DIST / "index.html"
         if index_path.exists():
             return FileResponse(index_path)
-    return {"message": "SecondSpark Backend Running", "hint": "Run 'npm run build' in frontend/ then restart backend."}
+    return {"message": "S2S - Scrap to Spark Backend Running", "hint": "Run 'npm run build' in frontend/ then restart backend."}
 
 
 # Mount built frontend static assets if present
@@ -121,49 +127,115 @@ async def predict(file: UploadFile = File(...)):
             grade=decision["grade"]
         )
 
+        report = generate_battery_report(
+        predicted_rul=prediction["predicted_rul"],
+        confidence_score=prediction["confidence_score"],
+        grade=decision["grade"],
+        degradation_rate=float(X.iloc[0]["degradation_slope"]),
+        temperature_variance=float(X.iloc[0]["temperature_variance"]),
+        sustainability=impact
+)
         # ===============================
         # FINAL RESPONSE
         # ===============================
 
         return {
-    "prediction": prediction,
-    "deployment": decision,
-    "sustainability": impact,
-
-    "analysis": {
-        "degradation_rate": (
-            "High" if prediction["predicted_rul"] < 50
-            else "Moderate" if prediction["predicted_rul"] < 100
-            else "Low"
-        ),
+    "battery_summary": {
+        "predicted_rul": prediction["predicted_rul"],
+        "confidence_score": prediction["confidence_score"],
+        "grade": decision["grade"],
+        "recommended_use": decision.get("recommended_use"),
         "health_status": (
             "Critical" if prediction["predicted_rul"] < 40
             else "Aging" if prediction["predicted_rul"] < 80
             else "Healthy"
+        ),
+        "degradation_level": (
+            "High" if prediction["predicted_rul"] < 50
+            else "Moderate" if prediction["predicted_rul"] < 100
+            else "Low"
         )
     },
 
-    "thresholds": {
-        "eol_capacity": float(df["Capacity"].iloc[0] * 0.7)
+    "sustainability": impact,
+
+    "technical_metrics": {
+        "initial_capacity": float(df["Capacity"].iloc[0]),
+        "eol_threshold_capacity": float(df["Capacity"].iloc[0] * 0.7),
+        "final_cycle_capacity": float(capacity_trend[-1]["Capacity"]),
+        "total_cycles_uploaded": int(df["cycle"].max())
     },
 
-    "trends": {
+    "visualization_data": {
         "capacity_trend": capacity_trend,
+
         "soh_trend": [
             {
                 "cycle": row["cycle"],
-                "soh": round(row["Capacity"] / df["Capacity"].iloc[0], 3)
+                "soh": round(
+                    row["Capacity"] / df["Capacity"].iloc[0],
+                    3
+                )
             }
             for row in capacity_trend
         ],
+
         "voltage_trend": voltage_trend,
         "temperature_trend": temperature_trend
-    }
+    },
+
+    "ai_report": report
 }
 
     except Exception as e:
         return {"error": str(e)}
 
+@app.post("/download-report")
+async def download_report(file: UploadFile = File(...)):
+
+    df = pd.read_csv(file.file)
+
+    X = extract_full_features(df)
+    prediction = predict_rul_with_confidence(model, X)[0]
+    decision = recommend_deployment(prediction["predicted_rul"])
+    impact = calculate_sustainability(
+        capacity_ah=float(X.iloc[0]["Capacity"]),
+        grade=decision["grade"]
+    )
+
+    report = generate_battery_report(
+        predicted_rul=prediction["predicted_rul"],
+        confidence_score=prediction["confidence_score"],
+        grade=decision["grade"],
+        degradation_rate=float(X.iloc[0]["degradation_slope"]),
+        temperature_variance=float(X.iloc[0]["temperature_variance"]),
+        sustainability=impact
+    )
+
+    response_data = {
+        "battery_summary": {
+            "predicted_rul": prediction["predicted_rul"],
+            "confidence_score": prediction["confidence_score"],
+            "grade": decision["grade"],
+            "health_status": "Generated",
+            "recommended_use": decision["recommended_use"]
+        },
+        "sustainability": impact,
+        "ai_report": report
+    }
+
+    filename = f"battery_report_{uuid.uuid4().hex}.pdf"
+    filepath = os.path.join("reports", filename)
+
+    os.makedirs("reports", exist_ok=True)
+
+    generate_pdf_report(response_data, filepath)
+
+    return FileResponse(
+        path=filepath,
+        media_type='application/pdf',
+        filename="S2S_Scrap_to_Spark_Battery_Report.pdf"
+    )
 
 # SPA fallback: serve index.html for any other GET so client-side routing works
 if FRONTEND_DIST.exists() and (FRONTEND_DIST / "index.html").exists():

@@ -6,7 +6,7 @@ def load_model():
     Load the actual trained Random Forest model from the .pkl file.
     Falls back to DummyModel if the file doesn't exist or is corrupted.
     """
-    model_path = os.path.join(os.path.dirname(__file__), "models", "secondspark_full_pipeline.pkl")
+    model_path = os.path.join(os.path.dirname(__file__), "models", "s2s_scrap_to_spark_full_pipeline.pkl")
     
     try:
         if os.path.exists(model_path):
