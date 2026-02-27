@@ -1,12 +1,12 @@
 import { RadialBar, RadialBarChart, ResponsiveContainer, Tooltip, PolarAngleAxis } from 'recharts'
 import { chartTheme, formatTooltipValue } from '../../theme'
 
-const MAX_YEARS = 30
+const MAX_LIFECYCLES = 30
 const GREEN_END = 66.67   // 20/30
 const YELLOW_END = 33.33  // 10/30
 
 type RULGaugeProps = {
-  predictedRulYears: number
+  predictedRulLifecycles: number
   height?: number
 }
 
@@ -16,10 +16,10 @@ function gaugeColor(percent: number): string {
   return chartTheme.semantic.critical
 }
 
-export function RULGauge({ predictedRulYears, height = 220 }: RULGaugeProps) {
-  const safeYears = Number.isFinite(predictedRulYears) ? Math.max(0, predictedRulYears) : 0
-  const clamped = Math.min(safeYears, MAX_YEARS)
-  const percent = (clamped / MAX_YEARS) * 100
+export function RULGauge({ predictedRulLifecycles, height = 220 }: RULGaugeProps) {
+  const safeLifecycles = Number.isFinite(predictedRulLifecycles) ? Math.max(0, predictedRulLifecycles) : 0
+  const clamped = Math.min(safeLifecycles, MAX_LIFECYCLES)
+  const percent = (clamped / MAX_LIFECYCLES) * 100
   const color = gaugeColor(percent)
   const data = [{ name: 'RUL', value: percent }]
 
@@ -50,7 +50,7 @@ export function RULGauge({ predictedRulYears, height = 220 }: RULGaugeProps) {
             <Tooltip
               formatter={(value: unknown) => [
                 typeof value === 'number' && Number.isFinite(value)
-                  ? `${formatTooltipValue((value / 100) * MAX_YEARS, { decimals: 1 })} years`
+                  ? `${formatTooltipValue((value / 100) * MAX_LIFECYCLES, { decimals: 1 })} lifecycles`
                   : '–',
                 'RUL',
               ]}
@@ -67,23 +67,23 @@ export function RULGauge({ predictedRulYears, height = 220 }: RULGaugeProps) {
         </ResponsiveContainer>
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
           <span className="text-3xl font-bold text-white">
-            {Number.isFinite(predictedRulYears) ? formatTooltipValue(predictedRulYears, { decimals: 1 }) : '–'}
+            {Number.isFinite(predictedRulLifecycles) ? formatTooltipValue(predictedRulLifecycles, { decimals: 1 }) : '–'}
           </span>
-          <span className="text-xs text-white/60 mt-1">years</span>
+          <span className="text-xs text-white/60 mt-1">lifecycles</span>
         </div>
       </div>
       <div className="mt-4 flex justify-center gap-6 text-[10px] text-white/50">
         <span className="flex items-center gap-1">
           <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
-          Healthy: &gt;20 y
+          Healthy: &gt;20 cycles
         </span>
         <span className="flex items-center gap-1">
           <div className="w-2 h-2 rounded-full bg-amber-500"></div>
-          Moderate: 10–20 y
+          Moderate: 10–20 cycles
         </span>
         <span className="flex items-center gap-1">
           <div className="w-2 h-2 rounded-full bg-red-500"></div>
-          Critical: &lt;10 y
+          Critical: &lt;10 cycles
         </span>
       </div>
     </div>

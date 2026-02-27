@@ -280,7 +280,7 @@ export function AnalysisPage() {
                   />
                 </div>
                 <div className="lg:col-span-2 grid gap-4 sm:grid-cols-2 s2s-fade-up" style={{ animationDelay: '300ms' }}>
-                  <RULGauge predictedRulYears={analysisData.prediction.predicted_rul} />
+                  <RULGauge predictedRulLifecycles={analysisData.prediction.predicted_rul} />
                   <RiskGauge riskLevel={analysisData.deployment.risk_level} />
                 </div>
               </div>
