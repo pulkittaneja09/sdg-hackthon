@@ -1,21 +1,25 @@
 import { RadialBar, RadialBarChart, ResponsiveContainer, Tooltip, PolarAngleAxis } from 'recharts'
 
 type RULGaugeProps = {
-  predictedRulYears: number
+  /** RUL value (same number whether interpreted as years or cycles) */
+  predictedRulLifecycles?: number
+  /** @deprecated Use predictedRulLifecycles */
+  predictedRulYears?: number
 }
 
-export function RULGauge({ predictedRulYears }: RULGaugeProps) {
-  const maxYears = 30
-  const safeYears = Number.isFinite(predictedRulYears) ? predictedRulYears : 0
-  const clamped = Math.max(0, Math.min(safeYears, maxYears))
-  const percent = (clamped / maxYears) * 100
+export function RULGauge({ predictedRulLifecycles, predictedRulYears }: RULGaugeProps) {
+  const value = predictedRulLifecycles ?? predictedRulYears ?? 0
+  const maxCycles = 30
+  const safeValue = Number.isFinite(value) ? value : 0
+  const clamped = Math.max(0, Math.min(safeValue, maxCycles))
+  const percent = (clamped / maxCycles) * 100
 
   const data = [{ name: 'RUL', value: percent }]
 
   return (
     <div className="h-64 w-full rounded-2xl border border-white/12 bg-ink-2 p-4 sm:p-6">
       <div className="text-xs font-medium uppercase tracking-[0.16em] text-white/60">Remaining useful life</div>
-      <div className="mt-2 text-sm text-white/70">Estimate out of {maxYears} years horizon.</div>
+      <div className="mt-2 text-sm text-white/70">Estimate out of {maxCycles} cycles horizon.</div>
       <div className="mt-4 h-40 sm:h-44">
         <ResponsiveContainer width="100%" height="100%">
           <RadialBarChart
@@ -33,7 +37,7 @@ export function RULGauge({ predictedRulYears }: RULGaugeProps) {
               fill="#63b87f"
             />
             <Tooltip
-              formatter={(value) => [typeof value === 'number' ? `${((value / 100) * maxYears).toFixed(1)} years` : '–', 'RUL']}
+              formatter={(val) => [typeof val === 'number' ? `${((val / 100) * maxCycles).toFixed(1)} cycles` : '–', 'RUL']}
               contentStyle={{
                 backgroundColor: '#020617',
                 borderRadius: 8,
@@ -46,8 +50,8 @@ export function RULGauge({ predictedRulYears }: RULGaugeProps) {
         </ResponsiveContainer>
       </div>
       <div className="mt-2 text-center text-2xl font-semibold text-white">
-        {Number.isFinite(predictedRulYears) ? predictedRulYears.toFixed(1) : '–'}{' '}
-        <span className="text-sm font-normal text-white/70">years</span>
+        {Number.isFinite(value) ? value.toFixed(1) : '–'}{' '}
+        <span className="text-sm font-normal text-white/70">cycles</span>
       </div>
     </div>
   )

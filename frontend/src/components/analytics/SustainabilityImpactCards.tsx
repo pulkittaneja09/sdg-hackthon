@@ -5,8 +5,8 @@ type SustainabilityImpactCardsProps = {
   usableEnergyKwh: number
   treeEquivalent: number
   lithiumSavedKg: number
-  /** Extended lifecycle years from RUL / reuse */
-  extendedLifecycleYears?: number
+  /** Extended lifecycle in cycles from RUL / reuse */
+  extendedLifecycles?: number
   /** Optional material recovery value (e.g. USD) */
   materialRecoveryValue?: number
 }
@@ -19,7 +19,7 @@ export function SustainabilityImpactCards({
   usableEnergyKwh,
   treeEquivalent,
   lithiumSavedKg,
-  extendedLifecycleYears,
+  extendedLifecycles,
   materialRecoveryValue,
 }: SustainabilityImpactCardsProps) {
   const safe = (v: unknown): number => (Number.isFinite(Number(v)) ? Number(v) : 0)
@@ -42,10 +42,10 @@ export function SustainabilityImpactCards({
           Extended lifecycle
         </div>
         <div className="mt-3 text-3xl font-bold text-white">
-          {extendedLifecycleYears != null && Number.isFinite(extendedLifecycleYears)
-            ? formatTooltipValue(extendedLifecycleYears, { decimals: 1 })
+          {extendedLifecycles != null && Number.isFinite(extendedLifecycles)
+            ? formatTooltipValue(extendedLifecycles, { decimals: 1 })
             : '–'}
-          <span className="ml-2 text-sm font-normal text-white/60">years</span>
+          <span className="ml-2 text-sm font-normal text-white/60">cycles</span>
         </div>
         <div className="mt-2 text-xs text-white/50 leading-relaxed">Estimated second-life duration</div>
       </div>

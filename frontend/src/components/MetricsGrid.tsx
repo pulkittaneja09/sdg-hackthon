@@ -39,7 +39,7 @@ export function MetricsGrid({
         </div>
         <div className="mt-3 flex items-baseline gap-1">
           <div className="text-2xl font-semibold text-white sm:text-3xl">{formattedRul}</div>
-          <div className="text-xs text-white/60">years</div>
+          <div className="text-xs text-white/60">cycles</div>
         </div>
         <div className="mt-2 text-xs text-white/55">{confidenceText}</div>
       </div>
