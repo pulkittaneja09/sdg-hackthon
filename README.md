@@ -1,8 +1,9 @@
-🚀 SCRAP 2 SPARK (S2S)
-AI-Powered Battery Intelligence for Second-Life Decisioning
+# 🚀 SCRAP 2 SPARK (S2S)
+### AI-Powered Battery Intelligence for Second-Life Decisioning
 
-Transforming end-of-life battery telemetry into intelligent reuse, risk, and sustainability insights.
-
+🌐 **Live Demo:** https://sdg-hackthon.vercel.app/  
+🔗 **Backend API:** https://sdg-hackathon.onrender.com/  
+📦 **Repository:** https://github.com/pulkittaneja09/sdg-hackthon
 🌍 Problem Statement
 
 With the rapid growth of EVs and energy storage systems, millions of lithium-ion batteries are approaching end-of-life.
