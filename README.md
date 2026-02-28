@@ -143,24 +143,6 @@ Predicted RUL
 
 Confidence score
 
-📂 Project Structure
-sdg-hackthon/
-│
-├── backend/
-│   ├── main.py
-│   ├── feature_engineering.py
-│   ├── rul_predictor.py
-│   ├── deployment_engine.py
-│   ├── sustainability_calculator.py
-│   └── models/
-│
-├── frontend/
-│   ├── src/
-│   ├── components/
-│   ├── pages/
-│   └── vite.config.ts
-│
-└── README.md
 ⚙️ Local Setup
 Backend
 cd backend
