@@ -145,3 +145,23 @@ Random Forest performs well on structured battery telemetry data, handles nonlin
                         ▼
             Interactive Dashboard
 ```
+## Project Structure
+
+```text
+SCRAP-2-SPARK
+│
+├── frontend/
+│   ├── src/
+│   ├── components/
+│   ├── pages/
+│   └── assets/
+│
+├── backend/
+│   ├── api/
+│   ├── services/
+│   ├── models/
+│   ├── utils/
+│   └── main.py
+│
+└── README.md
+```
