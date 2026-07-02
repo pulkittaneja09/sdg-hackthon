@@ -199,3 +199,15 @@ Runs on:
 ```
 http://localhost:5173
 ```
+## Deployment
+
+| Layer | Platform |
+|--------|----------|
+| Frontend | Vercel |
+| Backend | Render |
+
+Environment Variable
+
+```env
+VITE_API_URL=https://sdg-hackathon.onrender.com
+```
