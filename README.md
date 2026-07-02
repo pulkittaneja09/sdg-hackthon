@@ -165,3 +165,37 @@ SCRAP-2-SPARK
 │
 └── README.md
 ```
+## Local Setup
+
+### Prerequisites
+
+- Python 3.10+
+- Node.js 18+
+
+### Backend
+
+```bash
+cd backend
+pip install -r requirements.txt
+uvicorn main:app --reload
+```
+
+Runs on:
+
+```
+http://localhost:8000
+```
+
+### Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Runs on:
+
+```
+http://localhost:5173
+```
