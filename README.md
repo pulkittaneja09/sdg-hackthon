@@ -19,3 +19,19 @@ SCRAP 2 SPARK is an AI-powered platform that analyzes lithium-ion battery teleme
 - 🌐 **Live Demo:** https://sdg-hackthon.vercel.app/
 - ⚡ **Backend API:** https://sdg-hackathon.onrender.com/
 - 📂 **Repository:** https://github.com/pulkittaneja09/sdg-hackthon
+## Overview
+
+Electric vehicle batteries often retain significant usable capacity even after reaching the end of their primary automotive lifecycle. Identifying whether these batteries should be reused or recycled requires analyzing complex telemetry data, making manual evaluation difficult and time-consuming.
+
+SCRAP 2 SPARK provides an AI-powered decision support system that predicts battery health, estimates Remaining Useful Life (RUL), evaluates operational risk, and recommends appropriate second-life applications using machine learning.
+
+## Features
+
+- Battery telemetry upload using CSV files
+- Remaining Useful Life (RUL) prediction
+- Battery health assessment
+- Risk classification
+- Second-life deployment recommendation
+- Sustainability impact analysis
+- Interactive analytics dashboard
+- Production-ready REST API built with FastAPI
