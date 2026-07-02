@@ -211,3 +211,14 @@ Environment Variable
 ```env
 VITE_API_URL=https://sdg-hackathon.onrender.com
 ```
+## Future Improvements
+
+- Multi-battery batch analysis
+- Explainable AI (SHAP)
+- IoT telemetry integration
+- Battery Passport support
+- Authentication and user management
+- Enterprise analytics dashboard
+## License
+
+This project is licensed under the MIT License.
