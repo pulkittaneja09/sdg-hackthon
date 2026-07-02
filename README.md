@@ -121,3 +121,27 @@ Random Forest performs well on structured battery telemetry data, handles nonlin
 
 - Vercel
 - Render
+## System Architecture
+
+```text
+                 React Frontend
+                        │
+                  REST API Calls
+                        │
+                        ▼
+                FastAPI Backend
+                        │
+      ┌─────────────────┼────────────────┐
+      │                 │                │
+      ▼                 ▼                ▼
+ Data Processing  Feature Engineering  ML Model
+                        │
+                        ▼
+          Recommendation Engine
+                        │
+                        ▼
+         Sustainability Calculator
+                        │
+                        ▼
+            Interactive Dashboard
+```
