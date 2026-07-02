@@ -35,3 +35,29 @@ SCRAP 2 SPARK provides an AI-powered decision support system that predicts batte
 - Sustainability impact analysis
 - Interactive analytics dashboard
 - Production-ready REST API built with FastAPI
+## Workflow
+
+```text
+Battery Telemetry CSV
+        │
+        ▼
+Data Validation
+        │
+        ▼
+Feature Engineering
+        │
+        ▼
+Random Forest Model
+        │
+        ▼
+RUL Prediction
+        │
+        ▼
+Risk Assessment
+        │
+        ▼
+Deployment Recommendation
+        │
+        ▼
+Analytics Dashboard
+```
