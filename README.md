@@ -61,3 +61,63 @@ Deployment Recommendation
         ▼
 Analytics Dashboard
 ```
+## Machine Learning Pipeline
+
+### Model
+
+Random Forest Regressor
+
+### Input Features
+
+- Cycle Count
+- Capacity
+- Voltage
+- Current
+- Temperature
+- Time
+
+### Feature Engineering
+
+- Capacity degradation trend
+- Voltage stability
+- Temperature variance
+- Current consistency
+
+### Outputs
+
+- Remaining Useful Life (RUL)
+- Confidence Score
+- Battery Grade
+- Risk Category
+- Deployment Recommendation
+
+### Why Random Forest?
+
+Random Forest performs well on structured battery telemetry data, handles nonlinear relationships, minimizes overfitting, and produces reliable predictions with minimal preprocessing.
+## Tech Stack
+
+### Frontend
+
+- React
+- TypeScript
+- Vite
+- Tailwind CSS
+- Axios
+
+### Backend
+
+- FastAPI
+- Python
+- Pandas
+- NumPy
+- Scikit-learn
+- Uvicorn
+
+### Machine Learning
+
+- Random Forest Regressor
+
+### Deployment
+
+- Vercel
+- Render
